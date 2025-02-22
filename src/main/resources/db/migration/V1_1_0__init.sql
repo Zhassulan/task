@@ -1,3 +1,5 @@
+drop table task_result;
+
 create table task_result (
     id serial PRIMARY KEY,
     task_id int not null,
