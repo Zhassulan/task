@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@ExtendWith(EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class)
+@ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class, SpringExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
 @ActiveProfiles("test")
@@ -33,9 +33,6 @@ public class TaskServiceTest {
 
     @Autowired
     private TasksJpaRepository tasksJpaRepository;
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private TaskService taskService;
@@ -78,6 +75,8 @@ public class TaskServiceTest {
         executor.invokeAll(callableTasks);
 
         assertThat(tasksJpaRepository.findByRequestId(taskRunRequest.getRequestId())).isNotEmpty();
-        assertThat(tasksJpaRepository.findByRequestId(taskRunRequest1.getRequestId())).isEmpty();
+        assertThat(tasksJpaRepository.findByRequestId(taskRunRequest1.getRequestId())).isNotEmpty();
+        assertThat(tasksJpaRepository.findByRequestId(taskRunRequest.getRequestId()).get().isSuccessful()).isTrue();
+        assertThat(tasksJpaRepository.findByRequestId(taskRunRequest1.getRequestId()).get().isSuccessful()).isFalse();
     }
 }
