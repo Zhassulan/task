@@ -9,6 +9,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  profiles:
+    active: inst1
 
 server:
   error:
