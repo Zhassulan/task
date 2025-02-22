@@ -1,9 +1,9 @@
 spring:
   datasource:
-    driverClassName: org.postgresql.Driver
-    url:
-    username:
-    password:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:///integration-tests-db
+    username: sa
+    password: sa
   jpa:
     hibernate:
       ddl-auto: none

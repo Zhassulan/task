@@ -3,7 +3,6 @@ package com.home.task.controller;
 import com.home.task.dto.RequestId;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
-import com.home.task.repository.TasksJpaRepository;
 import com.home.task.service.TaskService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.util.UUID;
 public class TaskRestController {
 
     private final TaskService taskService;
-    private final TasksJpaRepository tasksJpaRepository;
 
     @PostMapping("/task")
     public RequestId runTaskAsync(@RequestParam(value = "min") @NotNull int min,
@@ -45,7 +43,7 @@ public class TaskRestController {
 
     @GetMapping("/task")
     public ResponseEntity getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
-        Optional<TaskEntity> task = tasksJpaRepository.findByRequestId(id);
+        Optional<TaskEntity> task = taskService.getTaskResult(id);
 
         return task
                 .map(t -> ResponseEntity.ok(task))
