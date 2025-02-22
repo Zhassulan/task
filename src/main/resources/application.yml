@@ -1,0 +1,22 @@
+spring:
+  flyway:
+    baselineOnMigrate: true
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tasks
+    username: postgres
+    password: pWd123$
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: info
+    org.hibernate: info
+    com.home.task: debug
