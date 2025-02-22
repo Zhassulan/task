@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tasks_result")
@@ -19,6 +20,7 @@ import java.util.Date;
 public class TaskEntity {
     @Id
     private Long id;
+    private UUID requestId;
     private Long taskId;
     private Integer[] result;
     private Date created;

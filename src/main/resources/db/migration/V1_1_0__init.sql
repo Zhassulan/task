@@ -2,6 +2,7 @@ drop table task_result;
 
 create table task_result (
     id serial PRIMARY KEY,
+    request_id uuid not null;
     task_id int not null,
     result  integer[],
     successful boolean,

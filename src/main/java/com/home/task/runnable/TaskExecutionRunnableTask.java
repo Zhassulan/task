@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 @Getter
 public class TaskExecutionRunnableTask implements Runnable {
 
-    private static final int ID = 1;
+    private static final Long ID = 1L;
     private TaskRunRequest request;
     private LockRegistry lockRegistry;
     private TasksJpaRepository tasksJpaRepository;
@@ -27,11 +27,11 @@ public class TaskExecutionRunnableTask implements Runnable {
 
     private void run(TaskRunRequest request) {
         log.info("Running task by request {}", request);
-        var lock = lockRegistry.obtain(String.valueOf(request.getTaskId()));
+        var lock = lockRegistry.obtain(String.valueOf(ID));
         boolean lockAquired = lock.tryLock();
 
         if (lockAquired) {
-            log.info("Lock taken successfully for task ID {}", request.getTaskId());
+            log.info("Lock taken successfully for task ID {}", ID);
             try {
                 AtomicInteger counter = new AtomicInteger(0);
                 Stream<Integer> result = Stream
@@ -43,19 +43,21 @@ public class TaskExecutionRunnableTask implements Runnable {
                         .takeWhile(n -> counter.get() < request.getCount());
                 tasksJpaRepository.save(TaskEntity.builder()
                         .successful(true)
-                        .message("Successfully finished task ID " + request.getTaskId())
-                        .taskId(request.getTaskId())
+                        .message("Successfully finished task ID " + ID)
+                        .taskId(ID)
+                        .requestId(request.getRequestId())
                         .result(result.toArray(Integer[]::new))
                         .build());
             } finally {
                 lock.unlock();
-                log.info("Lock untaken successfully for task ID {}", request.getTaskId());
+                log.info("Lock untaken successfully for task ID {}", ID);
             }
         } else {
             tasksJpaRepository.save(TaskEntity.builder()
                     .successful(false)
-                    .message("Lock error on running task ID " + request.getTaskId())
-                    .taskId(request.getTaskId())
+                    .message("Lock error on running task ID " + ID)
+                    .taskId(ID)
+                    .requestId(request.getRequestId())
                     .build());
         }
     }
