@@ -2,10 +2,13 @@ package com.home.task.service;
 
 import com.home.task.config.EmbeddedPostgresConfiguration;
 import com.home.task.config.EmbeddedPostgresWithFlywayConfiguration;
+import com.home.task.config.JdbcConfig;
+import com.home.task.config.JpaConfig;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
 import com.home.task.runnable.TaskExecutionRunnableTask;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
+import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,11 +36,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class, SpringExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
-@Import({ThreadPoolTaskExecutor.class, JdbcLockRegistry.class})
+@Import({JdbcConfig.class, JpaConfig.class, ThreadPoolTaskScheduler.class})
 public class TaskTest {
 
     @Autowired
-    private ThreadPoolTaskExecutor taskExecutor;
+    private ThreadPoolTaskScheduler taskExecutor;
 
     @Autowired
     private JdbcLockRegistry lockRegistry;
@@ -48,15 +53,15 @@ public class TaskTest {
         UUID requestId = UUID.randomUUID();
         UUID requestId1 = UUID.randomUUID();
         TaskRunRequest taskRunRequest = TaskRunRequest.builder()
-                .count(10)
+                .count(1000000)
                 .min(1)
-                .max(10)
+                .max(1000000)
                 .requestId(requestId)
                 .build();
         TaskRunRequest taskRunRequest1 = TaskRunRequest.builder()
-                .count(10)
+                .count(1000000)
                 .min(1)
-                .max(10)
+                .max(1000000)
                 .requestId(requestId1)
                 .build();
 
