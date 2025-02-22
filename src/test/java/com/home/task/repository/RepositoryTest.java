@@ -29,15 +29,16 @@ public class RepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    private Long TASK_ID = 1L;
+
     @Test
     void testSaveShouldFindSavedEntity() {
-        Long ID = 1L;
         UUID requestId = UUID.randomUUID();
         Integer[] arr = new Integer[]{1, 2, 3};
         TaskEntity newTask = TaskEntity.builder()
                 .successful(true)
                 .message("test task")
-                .taskId(ID)
+                .taskId(TASK_ID)
                 .requestId(requestId)
                 .result(arr)
                 .build();
@@ -48,16 +49,16 @@ public class RepositoryTest {
 
     @Test
     void testFindByRequestIdShouldReturnObject() {
-        Long ID = 1L;
         UUID requestId = UUID.randomUUID();
         Integer[] arr = new Integer[]{1, 2, 3};
         TaskEntity newTask = TaskEntity.builder()
                 .successful(true)
                 .message("test task")
-                .taskId(ID)
+                .taskId(TASK_ID)
                 .requestId(requestId)
                 .result(arr)
                 .build();
+        TaskEntity insertedTask = tasksJpaRepository.save(newTask);
 
         assertThat(tasksJpaRepository.findByRequestId(newTask.getRequestId())).isNotEmpty();
     }

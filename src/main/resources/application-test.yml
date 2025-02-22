@@ -1,4 +1,9 @@
 spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url:
+    username:
+    password:
   jpa:
     hibernate:
       ddl-auto: none
