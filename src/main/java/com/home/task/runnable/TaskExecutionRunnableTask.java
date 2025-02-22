@@ -25,6 +25,11 @@ public class TaskExecutionRunnableTask implements Runnable {
         this.tasksJpaRepository = tasksJpaRepository;
     }
 
+    @Override
+    public void run() {
+        run(request);
+    }
+
     private void run(TaskRunRequest request) {
         log.info("Running task by request {}", request);
         var lock = lockRegistry.obtain(String.valueOf(ID));
@@ -64,10 +69,5 @@ public class TaskExecutionRunnableTask implements Runnable {
                     .requestId(request.getRequestId())
                     .build());
         }
-    }
-
-    @Override
-    public void run() {
-        run(request);
     }
 }

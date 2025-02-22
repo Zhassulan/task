@@ -23,13 +23,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ActiveProfiles("test")
 public class RepositoryTest {
 
+    private Long TASK_ID = 1L;
+
     @Autowired
     private TasksJpaRepository tasksJpaRepository;
 
     @Autowired
     private TestEntityManager entityManager;
-
-    private Long TASK_ID = 1L;
 
     @Test
     void testSaveShouldFindSavedEntity() {
