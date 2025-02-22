@@ -8,7 +8,6 @@ import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
 import com.home.task.runnable.TaskExecutionRunnableTask;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +15,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
-import org.springframework.integration.support.locks.LockRegistry;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -31,11 +33,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class, SpringExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
-@Import({JdbcConfig.class, JpaConfig.class, ThreadPoolTaskScheduler.class})
+@Import({JdbcConfig.class, JpaConfig.class})
 public class TaskTest {
-
-    @Autowired
-    private ThreadPoolTaskScheduler taskExecutor;
 
     @Autowired
     private JdbcLockRegistry lockRegistry;
@@ -79,18 +78,6 @@ public class TaskTest {
         assertThat(entityOptional).isNotEmpty();
         assertThat(entityOptional1).isNotEmpty();
         assertThat(entityOptional.get().isSuccessful()).isTrue();
-        assertThat(entityOptional.get().isSuccessful()).isFalse();
-    }
-
-    private void awaitTerminationAfterShutdown(ExecutorService threadPool) {
-        threadPool.shutdown();
-        try {
-            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
-                threadPool.shutdownNow();
-            }
-        } catch (InterruptedException ex) {
-            threadPool.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+        assertThat(entityOptional1.get().isSuccessful()).isFalse();
     }
 }
