@@ -15,20 +15,29 @@ public class TaskExecutionRunnableTask implements Runnable {
 
     private static final int ID = 1;
     private TaskRunRequest request;
+    private LockRegistry lockRegistry;
 
-    public TaskExecutionRunnableTask(TaskRunRequest request) {
+    public TaskExecutionRunnableTask(LockRegistry lockRegistry, TaskRunRequest request) {
         this.request = request;
+        this.lockRegistry = lockRegistry;
     }
 
-    private Stream<Integer> run(TaskRunRequest request) {
-        AtomicInteger counter = new AtomicInteger(0);
-        return Stream
-                .generate(() -> {
-                    counter.incrementAndGet();
-                    int random = (int) (Math.random() * request.getMax() + request.getMin());
-                    return random;
-                })
-                .takeWhile(n -> counter.get() < request.getCount());
+    private Stream<Integer> run(TaskRunRequest request) throws TaskRunException {
+        var lock = lockRegistry.obtain(String.valueOf(request.getTaskId()));
+        boolean lockAquired = lock.tryLock();
+
+        if (lockAquired) {
+            log.info("Lock taken successfully for task ID {}", request.getTaskId());
+            try {
+                return run(request);
+            } finally {
+                lock.unlock();
+                log.info("Lock untaken successfully for payment ID {}", request.getTaskId());
+            }
+        } else {
+
+            throw new TaskRunException("Error on running task ID " + request.getTaskId());
+        }
     }
 
     @Override

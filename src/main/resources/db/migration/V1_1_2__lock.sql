@@ -1,4 +1,4 @@
-CREATE TABLE "INT_LOCK"
+CREATE TABLE if not exists "INT_LOCK"
 (
     "LOCK_KEY"     VARCHAR(36),
     "REGION"       VARCHAR(100),
