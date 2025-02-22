@@ -34,20 +34,23 @@ public class TaskExecutionRunnableTask implements Runnable {
             log.info("Lock taken successfully for task ID {}", ID);
             try {
                 AtomicInteger counter = new AtomicInteger(0);
-                Stream<Integer> result = Stream
+                Stream<Integer> stream = Stream
                         .generate(() -> {
                             counter.incrementAndGet();
                             int random = (int) (Math.random() * request.getMax() + request.getMin());
                             return random;
                         })
                         .takeWhile(n -> counter.get() < request.getCount());
-                tasksJpaRepository.save(TaskEntity.builder()
+                Integer [] result = stream.toArray(Integer[]::new);
+                log.debug("result {}", result);
+                TaskEntity entity = TaskEntity.builder()
                         .successful(true)
                         .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
                         .requestId(request.getRequestId())
-                        .result(result.toArray(Integer[]::new))
-                        .build());
+                        .result(result)
+                        .build();
+                tasksJpaRepository.save(entity);
                 log.info("Task ID {} is completed successfully by request {}", ID, request.getRequestId());
             } finally {
                 lock.unlock();

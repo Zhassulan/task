@@ -58,7 +58,7 @@ public class RepositoryTest {
                 .requestId(requestId)
                 .result(arr)
                 .build();
-        TaskEntity insertedTask = tasksJpaRepository.save(newTask);
+        tasksJpaRepository.save(newTask);
 
         assertThat(tasksJpaRepository.findByRequestId(newTask.getRequestId())).isNotEmpty();
     }
