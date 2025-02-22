@@ -23,8 +23,9 @@ public class TaskRestController {
     private final TaskService taskService;
     private final TasksJpaRepository tasksJpaRepository;
 
-    @PostMapping("/task/run")
-    public RequestId runTaskAsync(@RequestParam(value = "min") @NotNull int min, @RequestParam(value = "max") @NotNull int max,
+    @PostMapping("/task")
+    public RequestId runTaskAsync(@RequestParam(value = "min") @NotNull int min,
+                                  @RequestParam(value = "max") @NotNull int max,
                                   @RequestParam(value = "count") @NotNull int count) {
 
         RequestId requestId = RequestId.builder()
@@ -36,13 +37,14 @@ public class TaskRestController {
                 .count(count)
                 .requestId(requestId.getId())
                 .build();
+
         taskService.runAsyncTask(req);
 
         return requestId;
     }
 
-    @GetMapping("/task/result")
-    public ResponseEntity runTaskAsync(@RequestParam(value = "requestId") @NotNull UUID id) {
+    @GetMapping("/task")
+    public ResponseEntity getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
         Optional<TaskEntity> task = tasksJpaRepository.findByRequestId(id);
 
         return task
