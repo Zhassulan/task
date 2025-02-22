@@ -46,14 +46,13 @@ public class TaskExecutionRunnableTask implements Runnable {
                             return random;
                         })
                         .takeWhile(n -> counter.get() < request.getCount());
-                TaskEntity entity = TaskEntity.builder()
+                tasksJpaRepository.save(TaskEntity.builder()
                         .successful(true)
                         .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
                         .requestId(request.getRequestId())
                         .result(stream.toArray(Integer[]::new))
-                        .build();
-                tasksJpaRepository.save(entity);
+                        .build());
                 log.info("Task ID {} is completed successfully by request {}", ID, request.getRequestId());
             } finally {
                 lock.unlock();
