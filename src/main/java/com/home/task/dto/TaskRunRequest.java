@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class TaskRunRequest {
-    private int taskId;
+    private Long taskId;
     private int min;
     private int max;
     private int count;
