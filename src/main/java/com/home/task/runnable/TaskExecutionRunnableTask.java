@@ -62,6 +62,7 @@ public class TaskExecutionRunnableTask implements Runnable {
                 log.info("Lock untaken successfully for task ID {} by request ID {}", ID, request.getRequestId());
             }
         } else {
+            log.error("Lock error for task ID {} by request ID {}", ID, request.getRequestId());
             tasksJpaRepository.save(TaskEntity.builder()
                     .successful(false)
                     .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
