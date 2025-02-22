@@ -1,4 +1,4 @@
-package com.home.task;
+package com.home.task.config;
 
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;

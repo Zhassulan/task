@@ -1,8 +1,7 @@
-package com.home.task;
+package com.home.task.repository;
 
+import com.home.task.config.EmbeddedPostgresConfiguration;
 import com.home.task.entity.TaskEntity;
-import com.home.task.repository.TasksJpaRepository;
-import com.opentable.db.postgres.junit5.EmbeddedPostgresExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@ExtendWith(EmbeddedPostgresExtension.class)
+@ExtendWith(EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresConfiguration.class})
 public class RepositoryTest {
@@ -36,7 +35,7 @@ public class RepositoryTest {
         Integer[] arr = new Integer[]{1, 2, 3};
         TaskEntity newTask = TaskEntity.builder()
                 .successful(true)
-                .message("Successfully finished task ID " + ID + " by request ID " + requestId)
+                .message("test task")
                 .taskId(ID)
                 .requestId(requestId)
                 .result(arr)
