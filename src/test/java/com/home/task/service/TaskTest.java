@@ -11,7 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.integration.support.locks.LockRegistry;
+import org.springframework.context.annotation.Import;
+import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,13 +31,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class, SpringExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
+@Import({ThreadPoolTaskExecutor.class, JdbcLockRegistry.class})
 public class TaskTest {
 
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
 
     @Autowired
-    private LockRegistry lockRegistry;
+    private JdbcLockRegistry lockRegistry;
 
     @Autowired
     private TasksJpaRepository tasksJpaRepository;
