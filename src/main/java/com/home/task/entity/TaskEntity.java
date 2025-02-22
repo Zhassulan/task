@@ -20,10 +20,22 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "serial")
     private Long id;
+
+    @Column(name = "request_id")
     private UUID requestId;
+
+    @Column(name = "task_id")
     private Long taskId;
+
+    @Column(name = "result")
     private Integer[] result;
+
+    @Column(name = "created")
     private Date created;
+
+    @Column(name = "successful")
     private boolean successful;
+
+    @Column(name = "message")
     private String message;
 }
