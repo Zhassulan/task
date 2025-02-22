@@ -1,6 +1,7 @@
 package com.home.task.config;
 
 import com.home.task.entity.TaskEntity;
+import com.home.task.repository.TasksJpaRepository;
 import com.opentable.db.postgres.embedded.EmbeddedPostgres;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -15,7 +16,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = TaskEntity.class)
+@EnableJpaRepositories(basePackageClasses = TasksJpaRepository.class)
 @EntityScan(basePackageClasses = TaskEntity.class)
 public class EmbeddedPostgresConfiguration {
 

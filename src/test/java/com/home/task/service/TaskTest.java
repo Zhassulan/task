@@ -4,14 +4,17 @@ import com.home.task.config.EmbeddedPostgresConfiguration;
 import com.home.task.config.EmbeddedPostgresWithFlywayConfiguration;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
+import com.home.task.repository.TasksJpaRepository;
+import com.home.task.runnable.TaskExecutionRunnableTask;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.integration.support.locks.LockRegistry;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +26,22 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
+@DataJpaTest
 @ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class, SpringExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
-public class TaskServiceTest {
+public class TaskTest {
 
     @Autowired
-    private TaskService taskService;
+    private ThreadPoolTaskExecutor taskExecutor;
+
+    @Autowired
+    private LockRegistry lockRegistry;
+
+    @Autowired
+    private TasksJpaRepository tasksJpaRepository;
 
     @Test
-    @Transactional
     void testConcurrency() throws InterruptedException {
         UUID requestId = UUID.randomUUID();
         UUID requestId1 = UUID.randomUUID();
@@ -53,12 +61,12 @@ public class TaskServiceTest {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
         Callable<String> callableTask = () -> {
-            taskService.runAsyncTask(taskRunRequest);
+            taskExecutor.execute(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest, tasksJpaRepository));
             return "Task ID " + taskRunRequest.getTaskId() + " with request ID " + taskRunRequest.getRequestId();
         };
 
         Callable<String> callableTask1 = () -> {
-            taskService.runAsyncTask(taskRunRequest1);
+            taskExecutor.execute(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest1, tasksJpaRepository));
             return "Task ID " + taskRunRequest1.getTaskId() + " with request ID " + taskRunRequest1.getRequestId();
         };
 
@@ -68,8 +76,8 @@ public class TaskServiceTest {
 
         executor.invokeAll(callableTasks);
 
-        Optional<TaskEntity> entityOptional = taskService.getTaskResult(taskRunRequest.getRequestId());
-        Optional<TaskEntity> entityOptional1 = taskService.getTaskResult(taskRunRequest1.getRequestId());
+        Optional<TaskEntity> entityOptional = tasksJpaRepository.findByRequestId(taskRunRequest.getRequestId());
+        Optional<TaskEntity> entityOptional1 = tasksJpaRepository.findByRequestId(taskRunRequest1.getRequestId());
 
         assertThat(entityOptional).isNotEmpty();
         assertThat(entityOptional1).isNotEmpty();
