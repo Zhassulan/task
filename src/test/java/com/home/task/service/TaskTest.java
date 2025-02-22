@@ -22,13 +22,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.concurrent.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -49,39 +44,34 @@ public class TaskTest {
     private TasksJpaRepository tasksJpaRepository;
 
     @Test
-    void testConcurrency() throws InterruptedException {
+    void testConcurrency() throws InterruptedException, ExecutionException {
         UUID requestId = UUID.randomUUID();
         UUID requestId1 = UUID.randomUUID();
         TaskRunRequest taskRunRequest = TaskRunRequest.builder()
-                .count(1000000)
+                .count(10000000)
                 .min(1)
-                .max(1000000)
+                .max(10000000)
                 .requestId(requestId)
                 .build();
         TaskRunRequest taskRunRequest1 = TaskRunRequest.builder()
-                .count(1000000)
+                .count(10000000)
                 .min(1)
-                .max(1000000)
+                .max(10000000)
                 .requestId(requestId1)
                 .build();
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        Callable<String> callableTask = () -> {
-            taskExecutor.execute(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest, tasksJpaRepository));
-            return "Task ID " + taskRunRequest.getTaskId() + " with request ID " + taskRunRequest.getRequestId();
-        };
+        List<Future<?>> futures = new ArrayList<>();
 
-        Callable<String> callableTask1 = () -> {
-            taskExecutor.execute(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest1, tasksJpaRepository));
-            return "Task ID " + taskRunRequest1.getTaskId() + " with request ID " + taskRunRequest1.getRequestId();
-        };
+        for (int i = 0; i < 2; i++) {
+            Future<?> f = executor.submit(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest1, tasksJpaRepository));
+            futures.add(f);
+        }
 
-        List<Callable<String>> callableTasks = new ArrayList<>();
-        callableTasks.add(callableTask);
-        callableTasks.add(callableTask1);
-
-        executor.invokeAll(callableTasks);
+        for (Future<?> f : futures) {
+            f.get();
+        }
 
         Optional<TaskEntity> entityOptional = tasksJpaRepository.findByRequestId(taskRunRequest.getRequestId());
         Optional<TaskEntity> entityOptional1 = tasksJpaRepository.findByRequestId(taskRunRequest1.getRequestId());
@@ -90,5 +80,17 @@ public class TaskTest {
         assertThat(entityOptional1).isNotEmpty();
         assertThat(entityOptional.get().isSuccessful()).isTrue();
         assertThat(entityOptional.get().isSuccessful()).isFalse();
+    }
+
+    private void awaitTerminationAfterShutdown(ExecutorService threadPool) {
+        threadPool.shutdown();
+        try {
+            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                threadPool.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            threadPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }
