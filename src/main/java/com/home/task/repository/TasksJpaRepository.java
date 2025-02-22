@@ -2,6 +2,12 @@ package com.home.task.repository;
 
 import com.home.task.entity.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface TasksJpaRepository extends JpaRepository<TaskEntity, Long> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface TasksJpaRepository extends PagingAndSortingRepository<TaskEntity, Long> {
+
+    Optional<TaskEntity> findByRequestId(UUID id);
 }
