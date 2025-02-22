@@ -1,4 +1,4 @@
-drop table INT_LOCK;
+drop table if exists INT_LOCK;
 
 CREATE TABLE if not exists INT_LOCK (
     LOCK_KEY CHAR(36) NOT NULL,
