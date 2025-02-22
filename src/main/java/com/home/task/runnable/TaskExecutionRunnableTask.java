@@ -43,19 +43,20 @@ public class TaskExecutionRunnableTask implements Runnable {
                         .takeWhile(n -> counter.get() < request.getCount());
                 tasksJpaRepository.save(TaskEntity.builder()
                         .successful(true)
-                        .message("Successfully finished task ID " + ID)
+                        .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
                         .requestId(request.getRequestId())
                         .result(result.toArray(Integer[]::new))
                         .build());
+                log.info("Task ID {} is completed successfully by request {}", ID, request.getRequestId());
             } finally {
                 lock.unlock();
-                log.info("Lock untaken successfully for task ID {}", ID);
+                log.info("Lock untaken successfully for task ID {} by request ID {}", ID, request.getRequestId());
             }
         } else {
             tasksJpaRepository.save(TaskEntity.builder()
                     .successful(false)
-                    .message("Lock error on running task ID " + ID)
+                    .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
                     .taskId(ID)
                     .requestId(request.getRequestId())
                     .build());
