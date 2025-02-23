@@ -45,14 +45,14 @@ class TestJob {
 
 Запустите postgres контейнер файлом docker-compose в папке \docker
 
-Команда для сборки: 
+Команда Windows для сборки: 
 - mvn clean package
 
-Команда для запуска jar файла:
+Команда Windows для запуска jar файла:
 - java -jar app.jar --spring.profiles.active=inst1
 - java -jar app.jar --spring.profiles.active=inst2
 
-Тестировать можно JMeter, Postman.
+Тестировать также можно посредством JMeter, Postman.
 
 ### Дата разработки
 22.02.2025
