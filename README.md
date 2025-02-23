@@ -31,7 +31,8 @@ class TestJob {
 - Spring Framework 6
 - Spring Boot 3
 - Maven
-- Postgres database
+- Docker
+- Postgres
 - JPA/Hibernate
 - JDBC
 - Lombok
@@ -43,7 +44,7 @@ class TestJob {
 ### Сборка и публикация приложения
 Команда для сборки: mvn clean package
 
-Команда для запуска jar файла:
+Команда для запуска jar файла: java -jar app.jar -Dspring.profiles.active=inst1, java -jar app.jar -Dspring.profiles.active=inst2
 
 
 ### Дата разработки
