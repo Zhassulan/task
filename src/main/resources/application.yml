@@ -25,5 +25,5 @@ logging:
   level:
     root: INFO
     org.springframework.web: info
-    org.hibernate: debug
+    org.hibernate: trace
     com.home.task: debug

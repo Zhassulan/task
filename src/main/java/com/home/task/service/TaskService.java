@@ -4,10 +4,8 @@ import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
 import com.home.task.runnable.TaskExecutionRunnableTask;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TaskService implements InitializingBean {
+public class TaskService {
 
     private final LockRegistry lockRegistry;
     private final TasksJpaRepository tasksJpaRepository;
@@ -37,14 +35,5 @@ public class TaskService implements InitializingBean {
 
     public Optional<TaskEntity> getTaskResult(UUID id) {
         return tasksJpaRepository.findByRequestId(id);
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        UUID requestId = UUID.randomUUID();
-        TaskEntity newTask = TaskEntity.builder().taskId(1L)
-                .requestId(requestId)
-                .build();
-        saveTask(newTask);
     }
 }
