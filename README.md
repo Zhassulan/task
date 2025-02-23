@@ -52,6 +52,12 @@ class TestJob {
 - java -jar app.jar --spring.profiles.active=inst1
 - java -jar app.jar --spring.profiles.active=inst2
 
+примеры для вызова API endpoint:
+- curl --location --request POST 'localhost:8080/task?min=1&max=100&count=10'
+- curl --location 'localhost:8080/task?requestId=3803bcfa-8e89-4317-9357-04b7246bb387'
+
+Также вы можете открыть коллекцию Postman из папки /postman чтобы проверить работу приложения.
+
 Тестировать также можно посредством JMeter, Postman.
 
 ### Дата разработки

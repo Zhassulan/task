@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "6e8c305a-b06e-437b-81d3-2803d50e6640",
+		"name": "task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39763635"
+	},
+	"item": [
+		{
+			"name": "run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/task?min=1&max=100&count=10",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"task"
+					],
+					"query": [
+						{
+							"key": "min",
+							"value": "1"
+						},
+						{
+							"key": "max",
+							"value": "100"
+						},
+						{
+							"key": "count",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "result",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/task?requestId=a18bffc3-2bde-4046-b222-4616af3e74e7",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"task"
+					],
+					"query": [
+						{
+							"key": "requestId",
+							"value": "a18bffc3-2bde-4046-b222-4616af3e74e7"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
