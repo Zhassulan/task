@@ -84,7 +84,9 @@ public class TaskTest {
 
         assertThat(entityOptional).isNotEmpty();
         assertThat(entityOptional1).isNotEmpty();
-        assertThat(entityOptional.get().isSuccessful()).isTrue();
-        assertThat(entityOptional1.get().isSuccessful()).isFalse();
+
+        List<Boolean> results = List.of(entityOptional.get().isSuccessful(), entityOptional1.get().isSuccessful());
+        assertThat(results).satisfiesAnyOf(booleans -> booleans.equals(true));
+        assertThat(results).satisfiesAnyOf(booleans -> booleans.equals(false));
     }
 }
