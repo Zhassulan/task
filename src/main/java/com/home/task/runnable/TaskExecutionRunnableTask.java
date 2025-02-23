@@ -42,8 +42,7 @@ public class TaskExecutionRunnableTask implements Runnable {
                             return random;
                         })
                         .takeWhile(n -> counter.get() < request.getCount());
-                tasksJpaRepository.save(TaskEntity.builder()
-                        .successful(true)
+                tasksJpaRepository.save(TaskEntity.builder().successful(true)
                         .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
                         .requestId(request.getRequestId())
@@ -57,7 +56,6 @@ public class TaskExecutionRunnableTask implements Runnable {
         } else {
             log.error("Lock error for task ID {} by request ID {}", ID, request.getRequestId());
             tasksJpaRepository.save(TaskEntity.builder()
-                    .successful(false)
                     .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
                     .taskId(ID)
                     .requestId(request.getRequestId())

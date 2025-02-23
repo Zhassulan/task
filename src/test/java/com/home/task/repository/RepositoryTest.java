@@ -30,7 +30,6 @@ public class RepositoryTest {
     @Test
     void testSaveShouldFindSavedEntity() {
         UUID requestId = UUID.randomUUID();
-        Integer[] arr = new Integer[]{1, 2, 3};
         TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
                 .build();
@@ -43,7 +42,6 @@ public class RepositoryTest {
     @Test
     void testFindByRequestIdShouldReturnObject() {
         UUID requestId = UUID.randomUUID();
-        Integer[] arr = new Integer[]{1, 2, 3};
         TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
                 .build();
