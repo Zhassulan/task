@@ -1,7 +1,6 @@
 package com.home.task.service;
 
 import com.home.task.config.EmbeddedPostgresConfiguration;
-import com.home.task.config.EmbeddedPostgresWithFlywayConfiguration;
 import com.home.task.config.JdbcConfig;
 import com.home.task.config.JpaConfig;
 import com.home.task.dto.TaskRunRequest;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
 @ExtendWith({EmbeddedPostgresConfiguration.EmbeddedPostgresExtension.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(classes = {EmbeddedPostgresWithFlywayConfiguration.class})
+@ContextConfiguration(classes = {EmbeddedPostgresConfiguration.class})
 @Import({JdbcConfig.class, JpaConfig.class})
 @ActiveProfiles("test")
 public class TaskTest {
