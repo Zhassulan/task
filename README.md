@@ -41,11 +41,18 @@ class TestJob {
 - Testcontainers
 - LockRegistry
 
-### Сборка и публикация приложения
-Команда для сборки: mvn clean package
+### Сборка и запуск приложения
 
-Команда для запуска jar файла: java -jar app.jar -Dspring.profiles.active=inst1, java -jar app.jar -Dspring.profiles.active=inst2
+Запустите postgres контейнер файлом docker-compose в папке \docker
 
+Команда для сборки: 
+- mvn clean package
+
+Команда для запуска jar файла:
+- java -jar app.jar --spring.profiles.active=inst1
+- java -jar app.jar --spring.profiles.active=inst2
+
+Тестировать можно JMeter, Postman.
 
 ### Дата разработки
 22.02.2025
