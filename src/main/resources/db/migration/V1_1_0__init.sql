@@ -5,7 +5,7 @@ create table task_result (
     request_id uuid not null,
     task_id int not null,
     result  integer[],
-    successful boolean,
+    successful boolean default false,
     message varchar(255),
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

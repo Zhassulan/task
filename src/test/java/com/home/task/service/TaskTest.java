@@ -63,8 +63,14 @@ public class TaskTest {
 
         List<Future<?>> futures = new ArrayList<>();
 
-        Future<?> f = executor.submit(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest, tasksJpaRepository));
-        Future<?> f1 = executor.submit(new TaskExecutionRunnableTask(lockRegistry, taskRunRequest1, tasksJpaRepository));
+        Future<?> f = executor.submit(TaskExecutionRunnableTask.builder().lockRegistry(lockRegistry)
+                .request(taskRunRequest)
+                .tasksJpaRepository(tasksJpaRepository)
+                .build());
+        Future<?> f1 = executor.submit(TaskExecutionRunnableTask.builder().lockRegistry(lockRegistry)
+                .request(taskRunRequest1)
+                .tasksJpaRepository(tasksJpaRepository)
+                .build());
         futures.addAll(List.of(f, f1));
 
         for (Future<?> fv : futures) {

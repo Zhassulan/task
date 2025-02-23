@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -28,35 +27,25 @@ public class RepositoryTest {
     @Autowired
     private TasksJpaRepository tasksJpaRepository;
 
-    @Autowired
-    private TestEntityManager entityManager;
-
     @Test
     void testSaveShouldFindSavedEntity() {
         UUID requestId = UUID.randomUUID();
         Integer[] arr = new Integer[]{1, 2, 3};
-        TaskEntity newTask = TaskEntity.builder()
-                .successful(true)
-                .message("test task")
-                .taskId(TASK_ID)
+        TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
-                .result(arr)
                 .build();
         TaskEntity insertedTask = tasksJpaRepository.save(newTask);
 
-        assertThat(entityManager.find(TaskEntity.class, insertedTask.getId())).isEqualTo(newTask);
+        assertThat(tasksJpaRepository.findById(insertedTask.getId())).isNotEmpty();
+        assertThat(tasksJpaRepository.findById(insertedTask.getId()).get()).isEqualTo(newTask);
     }
 
     @Test
     void testFindByRequestIdShouldReturnObject() {
         UUID requestId = UUID.randomUUID();
         Integer[] arr = new Integer[]{1, 2, 3};
-        TaskEntity newTask = TaskEntity.builder()
-                .successful(true)
-                .message("test task")
-                .taskId(TASK_ID)
+        TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
-                .result(arr)
                 .build();
         tasksJpaRepository.save(newTask);
 

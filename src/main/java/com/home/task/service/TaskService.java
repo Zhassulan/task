@@ -23,7 +23,10 @@ public class TaskService {
     private final ThreadPoolTaskScheduler threadPoolTaskScheduler;
 
     public void runAsyncTask(TaskRunRequest request) {
-        threadPoolTaskScheduler.execute(new TaskExecutionRunnableTask(lockRegistry, request, tasksJpaRepository));
+        threadPoolTaskScheduler.execute(TaskExecutionRunnableTask.builder().lockRegistry(lockRegistry)
+                .request(request)
+                .tasksJpaRepository(tasksJpaRepository)
+                .build());
     }
 
     public void saveTask(TaskEntity request) {

@@ -3,6 +3,7 @@ package com.home.task.runnable;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.support.locks.LockRegistry;
@@ -12,18 +13,13 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Getter
+@Builder
 public class TaskExecutionRunnableTask implements Runnable {
 
     private static final Long ID = 1L;
     private TaskRunRequest request;
     private LockRegistry lockRegistry;
     private TasksJpaRepository tasksJpaRepository;
-
-    public TaskExecutionRunnableTask(LockRegistry lockRegistry, TaskRunRequest request, TasksJpaRepository tasksJpaRepository) {
-        this.request = request;
-        this.lockRegistry = lockRegistry;
-        this.tasksJpaRepository = tasksJpaRepository;
-    }
 
     @Override
     public void run() {
