@@ -16,6 +16,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -45,12 +46,12 @@ public class TaskJobConfig {
     public Step step1(JobRepository jobRepository,
                       PlatformTransactionManager txManager) throws Exception {
 
-        String name = "Process task step";
-        return new StepBuilder(name, jobRepository)
+        return new StepBuilder("step1", jobRepository)
                 .<TaskEntity, TaskEntity>chunk(5, txManager)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
