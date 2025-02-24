@@ -7,11 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -20,14 +16,11 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,13 +30,6 @@ public class TaskJobConfig {
     private final TaskProcessor processor;
     private final EntityManagerFactory entityManagerFactory;
     private final TaskWriter taskWriter;
-
-    @BeforeStep
-    public void beforeStep(StepExecution stepExecution) {
-        JobParameters parameters = stepExecution.getJobExecution()
-                .getJobParameters();
-        log.info("Before step params: {}", parameters);
-    }
 
     @Bean
     public Job processTaskJob(JobRepository jobRepository, Step step1) {
@@ -56,7 +42,6 @@ public class TaskJobConfig {
     }
 
     @Bean
-    @StepScope
     public Step step1(JobRepository jobRepository,
                       PlatformTransactionManager txManager) throws Exception {
 
