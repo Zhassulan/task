@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -17,14 +16,11 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
@@ -49,7 +45,7 @@ public class TaskJobConfig {
                       ItemProcessor<TaskEntity, TaskEntity> processor,
                       PlatformTransactionManager txManager) {
 
-        var name = "Process task step";
+        String name = "Process task step";
         return new StepBuilder(name, jobRepository)
                 .<TaskEntity, TaskEntity>chunk(5, txManager)
                 .reader(reader)
@@ -68,15 +64,13 @@ public class TaskJobConfig {
         return new JpaPagingItemReaderBuilder<TaskEntity>()
                 .name("taskReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("select r from TaskEntity r")
+                .queryString("select r from TaskEntity r where r.successful = false")
                 .pageSize(1000)
                 .build();
     }
 
     @Bean
-    @StepScope
-    public ItemProcessor<TaskEntity, TaskEntity> processor(@Value("#{jobParameters}") Map<String, Object> params) {
-        processor.setParams(params);
+    public ItemProcessor<TaskEntity, TaskEntity> processor() {
         return processor;
     }
 

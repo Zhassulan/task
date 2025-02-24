@@ -22,6 +22,9 @@ public class TaskEntity {
     private Long id;
     private UUID requestId;
     private Integer taskId;
+    private Integer min;
+    private Integer max;
+    private Integer count;
     private Integer[] result;
     private boolean successful;
     private String message;

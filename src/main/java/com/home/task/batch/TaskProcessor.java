@@ -1,6 +1,5 @@
 package com.home.task.batch;
 
-import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -26,8 +24,7 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
     private Map<String, Object> params;
 
-    private TaskEntity run(TaskRunRequest request) {
-        log.info("Running task by request {}", request);
+    private TaskEntity run(TaskEntity taskEntity) {
         var lock = lockRegistry.obtain(String.valueOf(ID));
         boolean lockAquired = lock.tryLock();
 
@@ -38,48 +35,37 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
                 Stream<Integer> stream = Stream
                         .generate(() -> {
                             counter.incrementAndGet();
-                            int random = (int) (Math.random() * request.getMax() + request.getMin());
+                            int random = (int) (Math.random() * taskEntity.getMax() + taskEntity.getMin());
                             return random;
                         })
-                        .takeWhile(n -> counter.get() < request.getCount());
+                        .takeWhile(n -> counter.get() < taskEntity.getCount());
 
-                log.info("Task ID {} is completed successfully by request {}", ID, request.getRequestId());
+                log.info("Task ID {} is completed successfully by request {}", ID, taskEntity.getRequestId());
 
                 return TaskEntity.builder().successful(true)
-                        .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
+                        .message("Successfully finished task ID " + ID + " by request ID " + taskEntity.getRequestId())
                         .taskId(ID)
-                        .requestId(request.getRequestId())
+                        .requestId(taskEntity.getRequestId())
                         .result(stream.toArray(Integer[]::new))
                         .build();
 
             } finally {
                 lock.unlock();
-                log.info("Lock untaken successfully for task ID {} by request ID {}", ID, request.getRequestId());
+                log.info("Lock untaken successfully for task ID {} by request ID {}", ID, taskEntity.getRequestId());
             }
         } else {
-            log.error("Lock error for task ID {} by request ID {}", ID, request.getRequestId());
+            log.error("Lock error for task ID {} by request ID {}", ID, taskEntity.getRequestId());
 
             return TaskEntity.builder()
-                    .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
+                    .message("Lock error on running task ID " + ID + " by request ID " + taskEntity.getRequestId())
                     .taskId(ID)
-                    .requestId(request.getRequestId())
+                    .requestId(taskEntity.getRequestId())
                     .build();
         }
     }
 
     @Override
     public TaskEntity process(TaskEntity item) throws Exception {
-        String requestId = params.get("requestId").toString();
-        int min = Integer.parseInt(params.get("min").toString());
-        int max = Integer.parseInt(params.get("max").toString());
-        int count = Integer.parseInt(params.get("count").toString());
-
-        return run(TaskRunRequest.builder()
-                .requestId(UUID.fromString(requestId))
-                .taskId(ID)
-                .min(min)
-                .max(max)
-                .count(count)
-                .build());
+        return run(item);
     }
 }

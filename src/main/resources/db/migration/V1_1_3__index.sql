@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX IDX_REQ_ID ON task_result(request_id);
