@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TaskEntityWriter implements ItemWriter<TaskEntity> {
+public class TaskWriter implements ItemWriter<TaskEntity> {
 
     private final TasksJpaRepository repository;
 

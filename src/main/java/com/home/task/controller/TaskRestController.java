@@ -3,9 +3,11 @@ package com.home.task.controller;
 import com.home.task.dto.RequestId;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
+import com.home.task.repository.TasksJpaRepository;
 import com.home.task.service.TaskService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskRestController {
 
+    @Qualifier("taskBatchService")
     private final TaskService taskService;
+
+    private final TasksJpaRepository repository;
 
     @PostMapping("/task")
     public RequestId runTaskAsync(@RequestParam(value = "min") @NotNull int min,
@@ -36,14 +41,14 @@ public class TaskRestController {
                 .requestId(requestId.getId())
                 .build();
 
-        taskService.runAsyncTask(req);
+        taskService.run(req);
 
         return requestId;
     }
 
     @GetMapping("/task")
     public ResponseEntity getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
-        Optional<TaskEntity> task = taskService.getTaskResult(id);
+        Optional<TaskEntity> task = repository.findByRequestId(id);
 
         return task
                 .map(t -> ResponseEntity.ok(task))
