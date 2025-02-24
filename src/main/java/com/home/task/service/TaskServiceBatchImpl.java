@@ -7,6 +7,8 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service("taskBatchService")
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class TaskServiceBatchImpl implements TaskService {
 
     private final JobLauncher jobLauncher;
+
+    @Qualifier("processTaskJob")
     private final Job job;
 
     @Override

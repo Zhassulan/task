@@ -16,6 +16,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -40,17 +41,15 @@ public class TaskJobConfig {
     }
 
     @Bean
-    public Step step1(ItemReader<TaskEntity> reader,
-                      ItemWriter<TaskEntity> writer,
-                      ItemProcessor<TaskEntity, TaskEntity> processor,
-                      PlatformTransactionManager txManager) {
+    public Step step1(JobRepository jobRepository,
+                      PlatformTransactionManager txManager) throws Exception {
 
         String name = "Process task step";
         return new StepBuilder(name, jobRepository)
                 .<TaskEntity, TaskEntity>chunk(5, txManager)
-                .reader(reader)
-                .processor(processor)
-                .writer(writer)
+                .reader(reader())
+                .processor(processor())
+                .writer(writer())
                 .build();
     }
 
@@ -60,7 +59,7 @@ public class TaskJobConfig {
     }
 
     @Bean
-    public JpaPagingItemReader itemReader() {
+    public JpaPagingItemReader reader() {
         return new JpaPagingItemReaderBuilder<TaskEntity>()
                 .name("taskReader")
                 .entityManagerFactory(entityManagerFactory)
