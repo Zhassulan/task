@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -16,6 +17,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -46,8 +48,8 @@ public class TaskJobConfig {
                       PlatformTransactionManager txManager) throws Exception {
 
         return new StepBuilder("step1", jobRepository)
-                .<TaskEntity, TaskEntity>chunk(5, txManager)
-                .reader(reader())
+                .<TaskEntity, TaskEntity>chunk(1, txManager)
+                .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
                 .taskExecutor(taskExecutor())
@@ -60,11 +62,12 @@ public class TaskJobConfig {
     }
 
     @Bean
-    public JpaPagingItemReader reader() {
+    @StepScope
+    public JpaPagingItemReader reader(@Value("#{jobParameters['entityId']}") Long entityId) {
         return new JpaPagingItemReaderBuilder<TaskEntity>()
                 .name("taskReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("select r from TaskEntity r where r.successful = false")
+                .queryString("select r from TaskEntity r where r.id = " + entityId)
                 .pageSize(1)
                 .build();
     }
