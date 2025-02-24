@@ -20,6 +20,7 @@ public class TaskServiceBatchImpl implements TaskService {
 
     @Override
     public void run(TaskRunRequest request) {
+        log.info("Running batch job by request {}", request);
         try {
             JobParameters params = new JobParametersBuilder()
                     .addLong("min", request.getMin().longValue())

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
@@ -28,7 +27,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.util.Map;
 
 @Configuration
-@EnableBatchProcessing
 @RequiredArgsConstructor
 @Slf4j
 public class TaskJobConfig {

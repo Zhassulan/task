@@ -7,6 +7,7 @@ import com.home.task.repository.TasksJpaRepository;
 import com.home.task.service.TaskService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskRestController {
 
+    @Autowired
     @Qualifier("taskBatchService")
     private final TaskService taskService;
 
