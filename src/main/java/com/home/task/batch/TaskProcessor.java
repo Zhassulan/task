@@ -3,26 +3,30 @@ package com.home.task.batch;
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @Component
 @Slf4j
-public class TaskProcessor implements org.springframework.batch.item.ItemProcessor<TaskRunRequest, TaskEntity> {
+@RequiredArgsConstructor
+@Data
+public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
     private static final Long ID = 1L;
-    private TaskRunRequest request;
-    private LockRegistry lockRegistry;
-    private TasksJpaRepository tasksJpaRepository;
 
-    @Override
-    public TaskEntity process(TaskRunRequest request) throws Exception {
-        return run(request);
-    }
+    private final LockRegistry lockRegistry;
+    private final TasksJpaRepository tasksJpaRepository;
+
+    private Map<String, Object> jobParameters;
 
     private TaskEntity run(TaskRunRequest request) {
         log.info("Running task by request {}", request);
@@ -56,11 +60,28 @@ public class TaskProcessor implements org.springframework.batch.item.ItemProcess
             }
         } else {
             log.error("Lock error for task ID {} by request ID {}", ID, request.getRequestId());
+
             return tasksJpaRepository.save(TaskEntity.builder()
                     .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
                     .taskId(ID)
                     .requestId(request.getRequestId())
                     .build());
         }
+    }
+
+    @Override
+    public TaskEntity process(TaskEntity item) throws Exception {
+        String requestId = jobParameters.get("requestId").toString();
+        int taskId = Integer.parseInt(jobParameters.get("taskId").toString());
+        int min = Integer.parseInt(jobParameters.get("min").toString());
+        int max = Integer.parseInt(jobParameters.get("max").toString());
+        int count = Integer.parseInt(jobParameters.get("count").toString());
+        return run(TaskRunRequest.builder()
+                .requestId(UUID.fromString(requestId))
+                .taskId(taskId)
+                .min(min)
+                .max(max)
+                .count(count)
+                .build());
     }
 }

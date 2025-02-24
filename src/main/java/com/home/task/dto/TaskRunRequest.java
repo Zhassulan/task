@@ -10,9 +10,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class TaskRunRequest {
-    private Long taskId;
+    private Integer taskId;
     private UUID requestId;
-    private int min;
-    private int max;
-    private int count;
+    private Integer min;
+    private Integer max;
+    private Integer count;
 }

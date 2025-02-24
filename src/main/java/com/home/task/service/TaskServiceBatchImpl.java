@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,14 @@ public class TaskServiceBatchImpl implements TaskService {
     @Override
     public void run(TaskRunRequest request) {
         try {
-            JobExecution execution = jobLauncher.run(job, new JobParameters());
+            JobParameters params = new JobParametersBuilder()
+                    .addLong("min", request.getMin().longValue())
+                    .addLong("max", request.getMax().longValue())
+                    .addLong("count", request.getCount().longValue())
+                    .addString("requestId", request.getRequestId().toString())
+                    .addLong("taskId", request.getTaskId().longValue())
+                    .toJobParameters();
+            JobExecution execution = jobLauncher.run(job, params);
             log.info("Job Status : {}", execution.getStatus());
             log.info("Job completed");
         } catch (Exception e) {
