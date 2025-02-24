@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class TaskRestController {
                 .max(max)
                 .taskId(TASK_ID)
                 .count(count)
+                .created(LocalDateTime.now())
                 .build());
         taskService.run();
 

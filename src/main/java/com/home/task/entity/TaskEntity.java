@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -28,5 +28,5 @@ public class TaskEntity {
     private Integer[] result;
     private boolean successful;
     private String message;
-    private Timestamp created;
+    private LocalDateTime created;
 }
