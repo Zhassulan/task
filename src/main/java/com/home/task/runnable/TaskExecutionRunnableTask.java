@@ -6,6 +6,7 @@ import com.home.task.repository.TasksJpaRepository;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.integration.support.locks.LockRegistry;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +17,8 @@ import java.util.stream.Stream;
 @Builder
 public class TaskExecutionRunnableTask implements Runnable {
 
-    private static final Long ID = 1L;
+    private static final Integer ID = 1;
+
     private TaskRunRequest request;
     private LockRegistry lockRegistry;
     private TasksJpaRepository tasksJpaRepository;

@@ -21,7 +21,7 @@ public class TaskEntity {
     @Column(columnDefinition = "serial", nullable = false, updatable = false)
     private Long id;
     private UUID requestId;
-    private Long taskId;
+    private Integer taskId;
     private Integer[] result;
     private boolean successful;
     private String message;

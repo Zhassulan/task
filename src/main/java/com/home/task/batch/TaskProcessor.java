@@ -2,7 +2,6 @@ package com.home.task.batch;
 
 import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
-import com.home.task.repository.TasksJpaRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +20,9 @@ import java.util.stream.Stream;
 @Data
 public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
-    private static final Long ID = 1L;
+    private static final Integer ID = 1;
 
     private final LockRegistry lockRegistry;
-    private final TasksJpaRepository tasksJpaRepository;
 
     private Map<String, Object> params;
 
@@ -47,12 +45,12 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
                 log.info("Task ID {} is completed successfully by request {}", ID, request.getRequestId());
 
-                return tasksJpaRepository.save(TaskEntity.builder().successful(true)
+                return TaskEntity.builder().successful(true)
                         .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
                         .requestId(request.getRequestId())
                         .result(stream.toArray(Integer[]::new))
-                        .build());
+                        .build();
 
             } finally {
                 lock.unlock();
@@ -61,24 +59,24 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
         } else {
             log.error("Lock error for task ID {} by request ID {}", ID, request.getRequestId());
 
-            return tasksJpaRepository.save(TaskEntity.builder()
+            return TaskEntity.builder()
                     .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
                     .taskId(ID)
                     .requestId(request.getRequestId())
-                    .build());
+                    .build();
         }
     }
 
     @Override
     public TaskEntity process(TaskEntity item) throws Exception {
         String requestId = params.get("requestId").toString();
-        int taskId = Integer.parseInt(params.get("taskId").toString());
         int min = Integer.parseInt(params.get("min").toString());
         int max = Integer.parseInt(params.get("max").toString());
         int count = Integer.parseInt(params.get("count").toString());
+
         return run(TaskRunRequest.builder()
                 .requestId(UUID.fromString(requestId))
-                .taskId(taskId)
+                .taskId(ID)
                 .min(min)
                 .max(max)
                 .count(count)

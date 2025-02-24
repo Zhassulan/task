@@ -26,7 +26,6 @@ public class TaskServiceBatchImpl implements TaskService {
                     .addLong("max", request.getMax().longValue())
                     .addLong("count", request.getCount().longValue())
                     .addString("requestId", request.getRequestId().toString())
-                    .addLong("taskId", request.getTaskId().longValue())
                     .toJobParameters();
             JobExecution execution = jobLauncher.run(job, params);
             log.info("Job Status : {}", execution.getStatus());
