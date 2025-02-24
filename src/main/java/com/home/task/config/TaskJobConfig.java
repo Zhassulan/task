@@ -1,9 +1,8 @@
 package com.home.task.config;
 
 import com.home.task.batch.TaskProcessor;
-import com.home.task.dto.TaskRunRequest;
+import com.home.task.batch.TaskWriter;
 import com.home.task.entity.TaskEntity;
-import com.home.task.repository.TasksJpaRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +16,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
-import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,13 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @Configuration
 @EnableBatchProcessing
@@ -41,11 +34,9 @@ import java.util.stream.Stream;
 public class TaskJobConfig {
 
     private final JobRepository jobRepository;
-    private final TasksJpaRepository repository;
     private final TaskProcessor processor;
     private final EntityManagerFactory entityManagerFactory;
-    private final LockRegistry lockRegistry;
-    private final TasksJpaRepository tasksJpaRepository;
+    private final TaskWriter taskWriter;
 
     @Bean
     public Job processTaskJob(Step step1) {
@@ -87,7 +78,12 @@ public class TaskJobConfig {
     @Bean
     @StepScope
     public ItemProcessor<TaskEntity, TaskEntity> processor(@Value("#{jobParameters}") Map<String, Object> params) {
-        processor.setJobParameters(params);
+        processor.setParams(params);
         return processor;
+    }
+
+    @Bean
+    public ItemWriter<TaskEntity> writer() throws Exception {
+        return taskWriter;
     }
 }

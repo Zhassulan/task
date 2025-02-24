@@ -26,7 +26,7 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
     private final LockRegistry lockRegistry;
     private final TasksJpaRepository tasksJpaRepository;
 
-    private Map<String, Object> jobParameters;
+    private Map<String, Object> params;
 
     private TaskEntity run(TaskRunRequest request) {
         log.info("Running task by request {}", request);
@@ -71,11 +71,11 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
     @Override
     public TaskEntity process(TaskEntity item) throws Exception {
-        String requestId = jobParameters.get("requestId").toString();
-        int taskId = Integer.parseInt(jobParameters.get("taskId").toString());
-        int min = Integer.parseInt(jobParameters.get("min").toString());
-        int max = Integer.parseInt(jobParameters.get("max").toString());
-        int count = Integer.parseInt(jobParameters.get("count").toString());
+        String requestId = params.get("requestId").toString();
+        int taskId = Integer.parseInt(params.get("taskId").toString());
+        int min = Integer.parseInt(params.get("min").toString());
+        int max = Integer.parseInt(params.get("max").toString());
+        int count = Integer.parseInt(params.get("count").toString());
         return run(TaskRunRequest.builder()
                 .requestId(UUID.fromString(requestId))
                 .taskId(taskId)
