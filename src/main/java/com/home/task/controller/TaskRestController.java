@@ -39,7 +39,7 @@ public class TaskRestController {
         RequestId requestId = RequestId.builder()
                 .id(uuid)
                 .build();
-        repository.save(TaskEntity.builder()
+        TaskEntity savedTaskEntity = repository.save(TaskEntity.builder()
                 .requestId(uuid)
                 .min(min)
                 .max(max)
@@ -47,7 +47,8 @@ public class TaskRestController {
                 .count(count)
                 .created(LocalDateTime.now())
                 .build());
-        taskService.run();
+
+        taskService.run(savedTaskEntity.getId());
 
         return requestId;
     }

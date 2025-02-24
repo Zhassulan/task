@@ -40,12 +40,10 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
                 log.info("Task ID {} is completed successfully by request {}", taskEntity.getTaskId(), taskEntity.getRequestId());
 
-                return TaskEntity.builder().successful(true)
-                        .message("Successfully finished task ID " + taskEntity.getTaskId() + " by request ID " + taskEntity.getRequestId())
-                        .taskId(taskEntity.getTaskId())
-                        .requestId(taskEntity.getRequestId())
-                        .result(stream.toArray(Integer[]::new))
-                        .build();
+                taskEntity.setSuccessful(true);
+                taskEntity.setResult(stream.toArray(Integer[]::new));
+
+                return taskEntity;
 
             } finally {
                 lock.unlock();
@@ -54,11 +52,7 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
         } else {
             log.error("Lock error for task ID {} by request ID {}", taskEntity.getTaskId(), taskEntity.getRequestId());
 
-            return TaskEntity.builder()
-                    .message("Lock error on running task ID " + taskEntity.getTaskId() + " by request ID " + taskEntity.getRequestId())
-                    .taskId(taskEntity.getTaskId())
-                    .requestId(taskEntity.getRequestId())
-                    .build();
+            return taskEntity;
         }
     }
 

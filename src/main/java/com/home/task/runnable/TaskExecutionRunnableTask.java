@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Getter
 @Builder
+@Deprecated
 public class TaskExecutionRunnableTask implements Runnable {
 
     private static final Integer ID = 1;

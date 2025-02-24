@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service("taskService")
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated
 public class TaskServiceImpl{
 
     private final LockRegistry lockRegistry;

@@ -1,5 +1,5 @@
 package com.home.task.service;
 
 public interface TaskService {
-    void run();
+    void run(Long entityId);
 }
