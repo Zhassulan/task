@@ -12,13 +12,12 @@ import org.springframework.stereotype.Service;
 @Service("taskService")
 @RequiredArgsConstructor
 @Slf4j
-public class TaskServiceImpl implements TaskService {
+public class TaskServiceImpl{
 
     private final LockRegistry lockRegistry;
     private final TasksJpaRepository tasksJpaRepository;
     private final ThreadPoolTaskScheduler threadPoolTaskScheduler;
 
-    @Override
     public void run(TaskRunRequest request) {
         threadPoolTaskScheduler.execute(TaskExecutionRunnableTask.builder().lockRegistry(lockRegistry)
                 .request(request)

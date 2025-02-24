@@ -1,7 +1,6 @@
 package com.home.task.controller;
 
 import com.home.task.dto.RequestId;
-import com.home.task.dto.TaskRunRequest;
 import com.home.task.entity.TaskEntity;
 import com.home.task.repository.TasksJpaRepository;
 import com.home.task.service.TaskService;
@@ -22,6 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TaskRestController {
 
+    private static final int TASK_ID = 1;
+
     @Autowired
     @Qualifier("taskBatchService")
     private final TaskService taskService;
@@ -33,17 +34,18 @@ public class TaskRestController {
                                   @RequestParam(value = "max") @NotNull int max,
                                   @RequestParam(value = "count") @NotNull int count) {
 
+        UUID uuid = UUID.randomUUID();
         RequestId requestId = RequestId.builder()
-                .id(UUID.randomUUID())
+                .id(uuid)
                 .build();
-        TaskRunRequest req = TaskRunRequest.builder()
-                .max(max)
+        repository.save(TaskEntity.builder()
+                .requestId(uuid)
                 .min(min)
+                .max(max)
+                .taskId(TASK_ID)
                 .count(count)
-                .requestId(requestId.getId())
-                .build();
-
-        taskService.run(req);
+                .build());
+        taskService.run();
 
         return requestId;
     }

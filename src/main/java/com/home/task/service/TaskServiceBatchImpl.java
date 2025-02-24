@@ -18,8 +18,7 @@ public class TaskServiceBatchImpl implements TaskService {
     private final Job job;
 
     @Override
-    public void run(TaskRunRequest request) {
-        log.info("Running batch job by request {}", request);
+    public void run() {
         try {
             JobExecution execution = jobLauncher.run(job, new JobParameters());
             log.info("Job Status : {}", execution.getStatus());

@@ -18,18 +18,16 @@ import java.util.stream.Stream;
 @Data
 public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
-    private static final Integer ID = 1;
-
     private final LockRegistry lockRegistry;
 
     private Map<String, Object> params;
 
     private TaskEntity run(TaskEntity taskEntity) {
-        var lock = lockRegistry.obtain(String.valueOf(ID));
+        var lock = lockRegistry.obtain(String.valueOf(taskEntity.getTaskId()));
         boolean lockAquired = lock.tryLock();
 
         if (lockAquired) {
-            log.info("Lock taken successfully for task ID {}", ID);
+            log.info("Lock taken successfully for task ID {}", taskEntity.getTaskId());
             try {
                 AtomicInteger counter = new AtomicInteger(0);
                 Stream<Integer> stream = Stream
@@ -40,25 +38,25 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
                         })
                         .takeWhile(n -> counter.get() < taskEntity.getCount());
 
-                log.info("Task ID {} is completed successfully by request {}", ID, taskEntity.getRequestId());
+                log.info("Task ID {} is completed successfully by request {}", taskEntity.getTaskId(), taskEntity.getRequestId());
 
                 return TaskEntity.builder().successful(true)
-                        .message("Successfully finished task ID " + ID + " by request ID " + taskEntity.getRequestId())
-                        .taskId(ID)
+                        .message("Successfully finished task ID " + taskEntity.getTaskId() + " by request ID " + taskEntity.getRequestId())
+                        .taskId(taskEntity.getTaskId())
                         .requestId(taskEntity.getRequestId())
                         .result(stream.toArray(Integer[]::new))
                         .build();
 
             } finally {
                 lock.unlock();
-                log.info("Lock untaken successfully for task ID {} by request ID {}", ID, taskEntity.getRequestId());
+                log.info("Lock untaken successfully for task ID {} by request ID {}", taskEntity.getTaskId(), taskEntity.getRequestId());
             }
         } else {
-            log.error("Lock error for task ID {} by request ID {}", ID, taskEntity.getRequestId());
+            log.error("Lock error for task ID {} by request ID {}", taskEntity.getTaskId(), taskEntity.getRequestId());
 
             return TaskEntity.builder()
-                    .message("Lock error on running task ID " + ID + " by request ID " + taskEntity.getRequestId())
-                    .taskId(ID)
+                    .message("Lock error on running task ID " + taskEntity.getTaskId() + " by request ID " + taskEntity.getRequestId())
+                    .taskId(taskEntity.getTaskId())
                     .requestId(taskEntity.getRequestId())
                     .build();
         }
