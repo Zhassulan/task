@@ -28,8 +28,8 @@ class TestJob {
  
 ### Стек:
 - JDK 17
-- Spring Framework 6
-- Spring Boot 3
+- Spring Framework (Web, Batch, JPA)
+- Spring Boot
 - Maven
 - Docker
 - Postgres

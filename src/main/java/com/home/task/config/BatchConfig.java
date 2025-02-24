@@ -18,9 +18,9 @@ import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.UUID;
 
 @Configuration
 @EnableBatchProcessing
@@ -36,10 +36,11 @@ public class BatchConfig {
         return new JobBuilder("firstBatchJob", jobRepository).preventRestart().start(step1).build();
     }
 
-    public ItemReader<TaskEntity> reader(UUID id) {
+    @Bean
+    public ItemReader<TaskEntity> reader(TaskRunRequest request) {
         return new RepositoryItemReaderBuilder<TaskEntity>().repository(tasksJpaRepository)
                 .methodName("findByRequestId")
-                .arguments(id)
+                .arguments(request.getRequestId())
                 .build();
     }
 
@@ -58,12 +59,19 @@ public class BatchConfig {
                       PlatformTransactionManager transactionManager,
                       ItemReader<TaskEntity> reader,
                       @Qualifier("taskProcessor") org.springframework.batch.item.ItemProcessor<TaskEntity, TaskEntity> processor,
-                      ItemWriter<TaskEntity> writer) {
+                      ItemWriter<TaskEntity> writer,
+                      TaskRunRequest request) {
 
         return new StepBuilder("step1", jobRepository).<TaskEntity, TaskEntity>chunk(10, transactionManager)
-                .reader(reader)
+                .reader(reader(request))
                 .processor(processor)
+                .taskExecutor(taskExecutor())
                 .writer(writer)
                 .build();
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        return new SimpleAsyncTaskExecutor("spring_batch");
     }
 }
