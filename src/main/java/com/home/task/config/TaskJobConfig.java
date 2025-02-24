@@ -64,7 +64,7 @@ public class TaskJobConfig {
         return new JpaPagingItemReaderBuilder<TaskEntity>()
                 .name("taskReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("select r from TaskEntity r where r.id r.successful = false")
+                .queryString("select r from TaskEntity r where r.successful = false")
                 .pageSize(1)
                 .build();
     }
