@@ -48,6 +48,9 @@ public class TaskExecutionRunnableTask implements Runnable {
                 tasksJpaRepository.save(TaskEntity.builder().successful(true)
                         .message("Successfully finished task ID " + ID + " by request ID " + request.getRequestId())
                         .taskId(ID)
+                        .min(request.getMin())
+                        .max(request.getMax())
+                        .count(request.getCount())
                         .requestId(request.getRequestId())
                         .result(stream.toArray(Integer[]::new))
                         .build());
@@ -61,6 +64,9 @@ public class TaskExecutionRunnableTask implements Runnable {
             tasksJpaRepository.save(TaskEntity.builder()
                     .message("Lock error on running task ID " + ID + " by request ID " + request.getRequestId())
                     .taskId(ID)
+                    .min(request.getMin())
+                    .max(request.getMax())
+                    .count(request.getCount())
                     .requestId(request.getRequestId())
                     .build());
         }

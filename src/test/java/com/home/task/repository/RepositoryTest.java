@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ActiveProfiles("test")
 public class RepositoryTest {
 
-    private Long TASK_ID = 1L;
+    private Integer TASK_ID = 1;
 
     @Autowired
     private TasksJpaRepository tasksJpaRepository;
@@ -31,6 +31,9 @@ public class RepositoryTest {
         UUID requestId = UUID.randomUUID();
         TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
+                .max(10)
+                .min(10)
+                .count(10)
                 .build();
         TaskEntity insertedTask = tasksJpaRepository.save(newTask);
 
@@ -43,6 +46,9 @@ public class RepositoryTest {
         UUID requestId = UUID.randomUUID();
         TaskEntity newTask = TaskEntity.builder().taskId(TASK_ID)
                 .requestId(requestId)
+                .max(10)
+                .min(10)
+                .count(10)
                 .build();
         tasksJpaRepository.save(newTask);
 
