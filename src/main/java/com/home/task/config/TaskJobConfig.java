@@ -57,9 +57,9 @@ public class TaskJobConfig {
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
-                .faultTolerant()
+                /*.faultTolerant()
                 .retryLimit(3)
-                .retry(TaskRunException.class)
+                .retry(TaskRunException.class)*/
                 .build();
     }
 
