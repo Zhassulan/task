@@ -6,6 +6,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: pWd123$
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
   jpa:
     hibernate:
       ddl-auto: none

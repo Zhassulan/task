@@ -7,7 +7,10 @@ import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.annotation.AfterJob;
+import org.springframework.batch.core.annotation.BeforeJob;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -80,5 +83,15 @@ public class TaskJobConfig {
     @Bean
     public ItemWriter<TaskEntity> writer() throws Exception {
         return taskWriter;
+    }
+
+    @BeforeJob
+    public void beforeJob(JobExecution jobExecution) {
+        log.info("Job is about to start for Job ID {}", jobExecution.getJobId());
+    }
+
+    @AfterJob
+    public void afterJob(JobExecution jobExecution) {
+        log.info("Job has completed with status: {}", jobExecution.getStatus());
     }
 }
