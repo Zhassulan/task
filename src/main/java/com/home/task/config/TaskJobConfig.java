@@ -22,8 +22,6 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -57,9 +55,9 @@ public class TaskJobConfig {
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
-                /*.faultTolerant()
+                .faultTolerant()
                 .retryLimit(3)
-                .retry(TaskRunException.class)*/
+                .retry(TaskRunException.class)
                 .build();
     }
 
