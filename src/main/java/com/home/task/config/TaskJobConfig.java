@@ -64,11 +64,6 @@ public class TaskJobConfig {
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
-        return new SimpleAsyncTaskExecutor("spring_batch");
-    }
-
-    @Bean
     @StepScope
     public JpaPagingItemReader reader(@Value("#{jobParameters['entityId']}") Long entityId) {
         return new JpaPagingItemReaderBuilder<TaskEntity>()
