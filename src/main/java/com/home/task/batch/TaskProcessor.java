@@ -1,6 +1,7 @@
 package com.home.task.batch;
 
 import com.home.task.entity.TaskEntity;
+import com.home.task.exception.TaskRunException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
 
     private Map<String, Object> params;
 
-    private TaskEntity run(TaskEntity taskEntity) {
+    private TaskEntity run(TaskEntity taskEntity) throws TaskRunException {
         var lock = lockRegistry.obtain(String.valueOf(taskEntity.getTaskId()));
         boolean lockAquired = lock.tryLock();
 
@@ -52,7 +53,7 @@ public class TaskProcessor implements ItemProcessor<TaskEntity, TaskEntity> {
         } else {
             log.error("Lock error for task ID {} by request ID {}", taskEntity.getTaskId(), taskEntity.getRequestId());
 
-            return taskEntity;
+            throw new TaskRunException("Lock error for task ID " + taskEntity.getTaskId() + " by request ID " + taskEntity.getRequestId());
         }
     }
 

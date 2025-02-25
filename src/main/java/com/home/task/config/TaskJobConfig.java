@@ -1,16 +1,15 @@
 package com.home.task.config;
 
+import com.home.task.batch.Listener;
 import com.home.task.batch.TaskProcessor;
 import com.home.task.batch.TaskWriter;
 import com.home.task.entity.TaskEntity;
+import com.home.task.exception.TaskRunException;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.annotation.AfterJob;
-import org.springframework.batch.core.annotation.BeforeJob;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -35,11 +34,14 @@ public class TaskJobConfig {
     private final TaskProcessor processor;
     private final EntityManagerFactory entityManagerFactory;
     private final TaskWriter taskWriter;
+    private final Listener listener;
+    private final JobRepository jobRepository;
 
     @Bean
     public Job processTaskJob(JobRepository jobRepository, Step step1) {
         String name = "Task Job";
         return new JobBuilder(name, jobRepository)
+                .listener(listener)
                 .incrementer(new RunIdIncrementer())
                 .flow(step1)
                 .end()
@@ -55,7 +57,9 @@ public class TaskJobConfig {
                 .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
-                .taskExecutor(taskExecutor())
+                .faultTolerant()
+                .retryLimit(3)
+                .retry(TaskRunException.class)
                 .build();
     }
 
@@ -83,15 +87,5 @@ public class TaskJobConfig {
     @Bean
     public ItemWriter<TaskEntity> writer() throws Exception {
         return taskWriter;
-    }
-
-    @BeforeJob
-    public void beforeJob(JobExecution jobExecution) {
-        log.info("Job is about to start for Job ID {}", jobExecution.getJobId());
-    }
-
-    @AfterJob
-    public void afterJob(JobExecution jobExecution) {
-        log.info("Job has completed with status: {}", jobExecution.getStatus());
     }
 }

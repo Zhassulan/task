@@ -32,6 +32,6 @@ server:
 logging:
   level:
     root: INFO
-    org.springframework.web: debug
+    org.springframework.web: info
     org.hibernate: info
     com.home.task: debug

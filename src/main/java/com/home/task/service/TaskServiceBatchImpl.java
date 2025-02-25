@@ -29,8 +29,7 @@ public class TaskServiceBatchImpl implements TaskService {
                     .addLong("entityId", entityId)
                     .toJobParameters();
             JobExecution execution = jobLauncher.run(job, jobParameters);
-            log.info("Job Status : {}", execution.getStatus());
-            log.info("Job completed");
+            log.info("Job instance ID {} status is: {}", execution.getJobInstance().getInstanceId(), execution.getStatus());
         } catch (Exception e) {
             log.error("Job failed: ", e);
         }
