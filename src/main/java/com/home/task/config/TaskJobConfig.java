@@ -22,6 +22,9 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -58,6 +61,7 @@ public class TaskJobConfig {
                 .faultTolerant()
                 .retryLimit(3)
                 .retry(TaskRunException.class)
+                .backOffPolicy(new ExponentialBackOffPolicy())
                 .build();
     }
 
