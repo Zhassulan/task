@@ -8,14 +8,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -31,9 +30,9 @@ public class TaskRestController {
     private final TasksJpaRepository repository;
 
     @PostMapping("/task")
-    public RequestId runTaskAsync(@RequestParam(value = "min") @NotNull int min,
-                                  @RequestParam(value = "max") @NotNull int max,
-                                  @RequestParam(value = "count") @NotNull int count) {
+    public Mono<RequestId> runTaskAsync(@RequestParam(value = "min") @NotNull int min,
+                                        @RequestParam(value = "max") @NotNull int max,
+                                        @RequestParam(value = "count") @NotNull int count) {
 
         UUID uuid = UUID.randomUUID();
         RequestId requestId = RequestId.builder()
@@ -50,15 +49,13 @@ public class TaskRestController {
 
         taskService.run(savedTaskEntity.getId());
 
-        return requestId;
+        return Mono.just(requestId);
     }
 
     @GetMapping("/task")
-    public ResponseEntity getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
-        Optional<TaskEntity> task = repository.findByRequestId(id);
-
-        return task
-                .map(t -> ResponseEntity.ok(task))
-                .orElse(ResponseEntity.notFound().build());
+    public Mono<TaskEntity> getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
+        return repository.findByRequestId(id)
+                .map(taskEntity -> Mono.just(taskEntity))
+                .orElseThrow();
     }
 }
