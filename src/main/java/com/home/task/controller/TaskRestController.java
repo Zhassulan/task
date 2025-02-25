@@ -55,7 +55,7 @@ public class TaskRestController {
     @GetMapping("/task")
     public Mono<TaskEntity> getTaskResult(@RequestParam(value = "requestId") @NotNull UUID id) {
         return repository.findByRequestId(id)
-                .map(taskEntity -> Mono.just(taskEntity))
+                .map(Mono::just)
                 .orElseThrow();
     }
 }
